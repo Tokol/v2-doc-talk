@@ -1,6 +1,6 @@
 import 'package:doc_talk/models/otp_verification.dart';
 import 'package:doc_talk/networks/api_client.dart';
-import 'package:doc_talk/ui/dasboard/dashboard.dart';
+import 'package:doc_talk/ui/dasboard/dashboard_route.dart';
 import 'package:flutter/material.dart';
 
 enum Cardmode {
@@ -41,7 +41,7 @@ class _CustomCardState extends State<CustomCard> {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    DashBoardScreen()),
+                    DashboardRoute()),
           );
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('$value.msg'),

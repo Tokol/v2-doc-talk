@@ -4,9 +4,9 @@ import 'dart:convert';
 import 'package:doc_talk/models/otp_verification.dart';
 import 'package:doc_talk/shared_pref/shared_pref.dart';
 import 'package:doc_talk/shared_pref/shared_pref_const.dart';
-import 'package:doc_talk/ui/dasboard/dashboard.dart';
 import 'package:flutter/material.dart';
 
+import '../dasboard/dashboard_route.dart';
 import 'auth_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
           User userDetails = User.fromJson(jsonDecode(userDetail));
         }
         Navigator.of(context)
-            .pushReplacementNamed(DashBoardScreen.route);
+            .pushReplacementNamed(DashboardRoute.route);
       } else {
         Navigator.of(context).pushReplacementNamed(AuthScreen.route);
       }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:doc_talk/models/login_model.dart';
@@ -84,8 +85,28 @@ class ApiClient {
 
       loginResponseModel =
       LoginResponseModel.fromJson(response.data);
+
+      print(response.data);
+      print(response.data['email']);
+
       await PrefUtils.putString(ACCESS_TOKEN, loginResponseModel.token ?? '');
-      await preferences.setBool("userLogIN", true);
+      //
+
+      Map<String,dynamic> responseMap = {
+        "_id":response.data['user'],
+        "contact_number":response.data['contactNumber'],
+        "email":response.data['email'],
+      };
+
+      await PrefUtils.putString(USER_ID, response.data['user'] ?? '');
+
+    //  await PrefUtils.putString(USER_DETAIL, jsonDecode(responseMap.toString()));
+
+     // print(responseMap);
+
+
+     // await preferences.setBool("userLogIN", true);
+
       return loginResponseModel;
     }
 

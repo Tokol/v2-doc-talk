@@ -3,14 +3,13 @@
 import 'package:doc_talk/models/login_model.dart';
 import 'package:doc_talk/models/register.dart';
 import 'package:doc_talk/networks/api_client.dart';
-import 'package:doc_talk/ui/dasboard/dashboard.dart';
+
 import 'package:doc_talk/ui/auth/otp_verification.dart';
 import 'package:doc_talk/widgets/custom_dropdown.dart';
 import 'package:flutter/material.dart';
-import 'package:hexcolor/hexcolor.dart';
 import 'package:toggle_switch/toggle_switch.dart';
-
 import '../models/resend_otp.dart';
+import '../ui/dasboard/dashboard_route.dart';
 import 'verfication_card.dart';
 
 enum AuthMode { signup, login }
@@ -83,7 +82,7 @@ class _AuthCardState extends State<AuthCard> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => DashBoardScreen(
+                    builder: (context) => DashboardRoute(
 
                     )));
           }
