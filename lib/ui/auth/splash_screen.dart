@@ -6,7 +6,7 @@ import 'package:doc_talk/shared_pref/shared_pref.dart';
 import 'package:doc_talk/shared_pref/shared_pref_const.dart';
 import 'package:flutter/material.dart';
 
-import '../dasboard/dashboard_route.dart';
+import '../dasboard/dashboard_home.dart';
 import 'auth_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
           User userDetails = User.fromJson(jsonDecode(userDetail));
         }
         Navigator.of(context)
-            .pushReplacementNamed(DashboardRoute.route);
+            .pushReplacementNamed(DashboardHomeScreen.route);
       } else {
         Navigator.of(context).pushReplacementNamed(AuthScreen.route);
       }

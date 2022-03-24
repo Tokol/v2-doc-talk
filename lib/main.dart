@@ -1,7 +1,8 @@
 import 'package:doc_talk/ui/auth/auth_screen.dart';
 import 'package:doc_talk/ui/auth/splash_screen.dart';
-import 'package:doc_talk/ui/dasboard/dashboard_route.dart';
+import 'package:doc_talk/ui/dasboard/dashboard_home.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 
 import 'helper/utils.dart';
 
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Doc Talk',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (BuildContext context) => const SplashScreen(),
         AuthScreen.route: (BuildContext context) => const AuthScreen(),
-        DashboardRoute.route:(BuildContext context) => DashboardRoute(),
+        DashboardHomeScreen.route:(BuildContext context) => DashboardHomeScreen(),
       },
     );
   }

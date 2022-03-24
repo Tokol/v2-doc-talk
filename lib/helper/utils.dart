@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class Utils {
@@ -18,15 +20,23 @@ class Utils {
       }
 
       else {
-        shortCutName =    shortCutName+" "+groupSplittingArray[i][0];
+        shortCutName =    shortCutName+""+groupSplittingArray[i][0];
       }
 
     }
 
-    return shortCutName;
+    return (shortCutName).toUpperCase();
 
   }
 
+  static String getFirstWord({required String fullSentence}){
+    String firstWord = "";
+    List<String> groupSplittingArray = fullSentence.split(" ");
+
+    firstWord = groupSplittingArray[0] +": ";
+
+    return firstWord;
+  }
 
 
   static bool _isNumeric(String str) {
@@ -45,12 +55,30 @@ class Utils {
     else  {
       String dottedValue = "";
       for (int i = 0; i < limit; i++) {
-        dottedValue =  dottedValue+ " "+ value[i];
+        dottedValue =  dottedValue+ ""+ value[i];
       }
 
       return dottedValue + "...";
     }
 
   }
+
+
+  static Future<bool> checkInternet() async {
+    try {
+    final result = await InternetAddress.lookup('https://www.google.com/');
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      return true;
+    }
+
+    else{
+      return false;
+    }
+
+    } on SocketException catch (_) {
+   return true;
+    }
+  }
+
 
 }

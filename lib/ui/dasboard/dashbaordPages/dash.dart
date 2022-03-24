@@ -1,56 +1,55 @@
 import 'package:doc_talk/models/otp_verification.dart';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../../data/dashboard_data.dart';
 import '../../../helper/utils.dart';
+import '../../../models/dasboard_data_model.dart';
 import '../../../models/recent_message_model.dart';
+import '../dashboard_home.dart';
 import 'dash_list_views/recent_chat_list.dart';
 
-class DashBoardHomeScreen extends StatelessWidget {
+class DashBoardHomeScreen extends StatefulWidget {
+  @override
+  State<DashBoardHomeScreen> createState() => _DashBoardHomeScreenState();
+}
+
+
+
+
+class _DashBoardHomeScreenState extends State<DashBoardHomeScreen> {
+
+
   List<RecentMessageModel> recentMessageList = [];
 
   @override
   Widget build(BuildContext context) {
     recentMessageList.add(RecentMessageModel( lastMessage: 'check urine', timeStamp: '17:31', lastMessageBy: 'Suresh', groupName: 'Health Care Hospital', ));
     recentMessageList.add(RecentMessageModel( lastMessage: 'ok guys lets meet ', timeStamp: '23:55', lastMessageBy: 'You', groupName: 'Hams Psyc Ward 30', ));
-    recentMessageList.add(RecentMessageModel( lastMessage: 'hello, all', timeStamp: '6:10', lastMessageBy: 'Sujan', groupName: 'Karuna Clinic Gyno Ward', ));
+    recentMessageList.add(RecentMessageModel( lastMessage: 'hello, all', timeStamp: '6:10', lastMessageBy: 'Sujan', groupName: 'Karuna Clinic Gyno Ward 30', ));
     recentMessageList.add(RecentMessageModel( lastMessage: 'ayeshaaa', timeStamp: '5:9', lastMessageBy: 'Rajesh', groupName: 'Teaching Hospital ward Dermotology', ));
     User user = User();
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      body: Stack(children: [
-        Positioned(
+    return Consumer<DashBoardData>(
+        builder: (context, data, child) {
 
-          top: MediaQuery.of(context).size.height * 0.01,
-          left: 0,
-          right: 0,
-          child: Container(
-            margin: EdgeInsets.only(top: AppBar().preferredSize.height),
+          return FutureBuilder<DashboardDataModel>(
+            future: data.loadDashBoardData(),
+            builder: (BuildContext context,
+                AsyncSnapshot<DashboardDataModel> snapshot){
+              return Container();
+              //
+            },
+          );
+        }
 
-            child: _appbar(context, user),)
-        ),
-        Positioned(
-          child: Container(
-            margin: EdgeInsets.only(top: AppBar().preferredSize.height-15),
-            decoration:  BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
-            ),
-            child:RecentChatList(recentMessageList: recentMessageList,),
-          ),
-          top: MediaQuery.of(context).size.height * 0.15,
-          left: 0,
-          right: 0,
-          bottom: 0,
-        ),
-      ]),
     );
   }
 
   _appbar(BuildContext context, User user) {
+    // var data  =  Provider.of<DashBoardData>(context, listen: false);
+    // print(data.dashboardDataModel.fullName);
+
     return Padding(
       padding:  EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       child: Row(
@@ -81,7 +80,7 @@ class DashBoardHomeScreen extends StatelessWidget {
               children:  [
                 IconButton(
                   onPressed: ()  {
-               Utils.mainDashNav.currentState!.pushReplacementNamed('/chat').then((value) => print('back again'));
+               Utils.mainDashNav.currentState!.pushReplacementNamed('/chat').then((value) => DashboardHomeScreen());
 
                   },
                  icon: Icon( Icons.add,

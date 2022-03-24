@@ -104,7 +104,7 @@ class User {
   int? v;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-        deviceId: List<dynamic>.from(json["device_id"].map((x) => x)),
+        deviceId:  json["device_id"]!=null?List<dynamic>.from(json["device_id"].map((x) => x)):null,
         id: json["_id"],
         name: json["name"],
         email: json["email"],

@@ -16,6 +16,14 @@
 	<string>doc_talk</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+          <string>Upload images for user profile and chat message</string>
+          <key>NSCameraUsageDescription</key>
+          <string>Upload image from camera foruser profile and chat message</string>
+          <key>NSMicrophoneUsageDescription</key>
+          <string>Post videos in chat message</string>
+          <key>NSContactsUsageDescription</key>
+               <string> Need access to the contact list to create groups</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 import '../../../../helper/utils.dart';
 class ChatScreen extends StatelessWidget {
@@ -25,8 +27,11 @@ leading: IconButton(icon: Icon(Icons.arrow_back_ios), onPressed: () {
     );
   }
 
+
+
   Future<bool> backPressed () async {
-    Utils.mainDashNav.currentState!.pushReplacementNamed('/');
+    Get.back();
+    //Utils.mainDashNav.currentState!.pushReplacementNamed('/');
     return true;
   }
 

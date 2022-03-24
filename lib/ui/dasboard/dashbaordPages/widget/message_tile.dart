@@ -23,16 +23,12 @@ class MessageTile extends StatefulWidget {
 
 
 
-
-
 class _MessageTileState extends State<MessageTile> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {},
       child: Container(
-
-
         padding:
             const EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
         child: Row(
@@ -64,14 +60,24 @@ class _MessageTileState extends State<MessageTile> {
                           const SizedBox(
                             height: 6,
                           ),
-                          Text(
-                            Utils.dottedShortMessage(value: widget.lastMessageText, limit: 10),
-                            style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey.shade600,
-                                fontWeight:
+                          Row(children: [
+
+                            Text(
+                              Utils.getFirstWord(fullSentence: widget.messageBy)
+                              , style: TextStyle(color:  Theme.of(context).primaryColor, fontWeight: FontWeight.bold),),
+                            Expanded(
+
+                              child: Text(
+                                Utils.dottedShortMessage(value: widget.lastMessageText+" la lal la land is very sad movie at the end ...", limit: 15),
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.grey.shade600,
+                                    fontWeight:
                                     FontWeight.normal),
-                          ),
+                              ),
+                            ),
+
+                          ],)
                         ],
                       ),
                     ),

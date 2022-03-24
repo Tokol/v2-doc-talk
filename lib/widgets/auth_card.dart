@@ -9,7 +9,7 @@ import 'package:doc_talk/widgets/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import '../models/resend_otp.dart';
-import '../ui/dasboard/dashboard_route.dart';
+import '../ui/dasboard/dashboard_home.dart';
 import 'verfication_card.dart';
 
 enum AuthMode { signup, login }
@@ -82,7 +82,7 @@ class _AuthCardState extends State<AuthCard> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => DashboardRoute(
+                    builder: (context) => DashboardHomeScreen(
 
                     )));
           }
@@ -468,3 +468,5 @@ class _AuthCardState extends State<AuthCard> {
     );
   }
 }
+
+
