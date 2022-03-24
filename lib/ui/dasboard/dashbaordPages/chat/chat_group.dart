@@ -1,3 +1,4 @@
+import 'package:doc_talk/networks/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:get/get.dart';
@@ -12,12 +13,13 @@ class CreateChatGroup extends StatefulWidget {
 }
 
 class _CreateChatGroupState extends State<CreateChatGroup> {
-  final DashboardDataController _controller = Get.put(DashboardDataController());
-
+  final DashboardDataController _controller =
+      Get.put(DashboardDataController());
 
   @override
   void initState() {
-    getContactDetail();
+    getUserFromContacts();
+
     super.initState();
   }
 
@@ -41,26 +43,17 @@ class _CreateChatGroupState extends State<CreateChatGroup> {
     );
   }
 
-
-
-
-Future<List<User>> getUserFromContacts() async {
+  Future<List<User>> getUserFromContacts() async {
     List<User> listUsers = [];
 
+    List<String> contactsNumbers = await getContactDetail();
 
-
+    await ApiClient().searchUserFromPhoneContacts(accessToken: _controller.dashboardDataModal.value.accessToken!, contacts:contactsNumbers);
 
     return listUsers;
-
-
-}
-
-
-
-
+  }
 
   Future<List<String>> getContactDetail() async {
-
     List<String> sanitizeNumber = [];
     if (await FlutterContacts.requestPermission()) {
       List<Contact> contacts = await FlutterContacts.getContacts();
@@ -82,7 +75,6 @@ Future<List<User>> getUserFromContacts() async {
       var seen = Set<String>();
       List<String> uniquelist =
           contactNumbers.where((contact) => seen.add(contact)).toList();
-
       for (int i = 0; i < uniquelist.length; i++) {
         uniquelist[i] = uniquelist[i]
             .replaceAll("-", "")
@@ -95,57 +87,35 @@ Future<List<User>> getUserFromContacts() async {
             .replaceAll(")", "")
             .replaceAll(" ", "");
       }
-
-
       sanitizeNumber = sanitizePhoneNumberString(uniquelist);
-
-
       return sanitizeNumber;
     }
-
     return sanitizeNumber;
   }
 
   List<String> sanitizePhoneNumberString(List<String> phoneNumbers) {
-
     List<String> sanitizePhoneNumberList = [];
-
-    for (int i=0; i<phoneNumbers.length;i++){
-
+    for (int i = 0; i < phoneNumbers.length; i++) {
       String reverseNumber = reverseStringUsingCodeUnits(phoneNumbers[i]);
-
-      if(reverseNumber.length==10 || reverseNumber.length>10){
-        String filterNumber = reverseNumber.substring(0,10);
-
-        if(_controller.dashboardDataModal.value.contactNumber!=null){
-         if(reverseStringUsingCodeUnits(_controller.dashboardDataModal.value.contactNumber!)!=filterNumber){
-           sanitizePhoneNumberList.add(reverseStringUsingCodeUnits(filterNumber));
-         }
-        }
-
-
-
+      if (reverseNumber.length >= 10) {
+        String filterNumber = reverseNumber.substring(0, 10);
+    if(_controller.dashboardDataModal.value.contactNumber!=null){
+      if(reverseStringUsingCodeUnits(_controller.dashboardDataModal.value.contactNumber!)!=filterNumber){
+        sanitizePhoneNumberList.add(reverseStringUsingCodeUnits(filterNumber));
       }
     }
-
-
-    return  sanitizePhoneNumberList;
-
+      }
+    }
+    print(sanitizePhoneNumberList);
+    return sanitizePhoneNumberList;
   }
 
   String reverseStringUsingCodeUnits(String input) {
     return String.fromCharCodes(input.codeUnits.reversed);
   }
 
-  List<String> getNumbersOnly(List<Contact> contacts) {
-    List<String> filterContacts = [];
-
-    return filterContacts;
-  }
-
   Future<bool> backPressed() async {
     Get.back();
-    //Utils.mainDashNav.currentState!.pushReplacementNamed('/');
     return true;
   }
 }

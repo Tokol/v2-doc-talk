@@ -204,7 +204,7 @@ class ApiClient {
   }
 
 
-  Future<void> searchUser({required String accessToken,required List<String> contacts }) async {
+  Future<void> searchUserFromPhoneContacts({required String accessToken,required List<String> contacts }) async {
     Dio _dio = getApiClient();
     _dio.options.headers["x-access-token"] = accessToken;
 

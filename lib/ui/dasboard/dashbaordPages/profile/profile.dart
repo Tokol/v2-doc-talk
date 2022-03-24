@@ -163,7 +163,7 @@ class _UserProfileState extends State<UserProfile> {
           ),
           Obx(
             () => Text(
-              _controller.dashboardDataModal.value.fullName!,
+              _controller.dashboardDataModal.value.fullName!=null?_controller.dashboardDataModal.value.fullName!:"",
               style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
@@ -172,7 +172,7 @@ class _UserProfileState extends State<UserProfile> {
           ),
           Obx(
             () => Text(
-              _controller.dashboardDataModal.value.speciality!,
+              _controller.dashboardDataModal.value.speciality!=null?_controller.dashboardDataModal.value.speciality!:"",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
