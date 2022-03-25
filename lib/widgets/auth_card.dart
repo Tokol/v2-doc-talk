@@ -7,6 +7,8 @@ import 'package:doc_talk/networks/api_client.dart';
 import 'package:doc_talk/ui/auth/otp_verification.dart';
 import 'package:doc_talk/widgets/custom_dropdown.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import '../models/resend_otp.dart';
 import '../ui/dasboard/dashboard_home.dart';
@@ -404,12 +406,10 @@ class _AuthCardState extends State<AuthCard> {
                               color: Color.fromRGBO(105, 49, 142, 1)),
                         ),
                         onPressed: () {
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) => OtpandForgetPassword(
-                          //               cardmode: Cardmode.forgetPassword,
-                          //             )));
+                          Get.to(() => OtpandForgetPassword(
+                            cardmode: Cardmode.forgetPassword,
+                          ));
+
                         },
                       ),
                     ],

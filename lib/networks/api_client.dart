@@ -74,6 +74,39 @@ class ApiClient {
     }
   }
 
+
+  Future<dynamic> requestPhonenumberForForgetPassword(String phoneNumber) async {
+        //REQUEST_PHONE_NUMBER_FORGET_PASSWORD
+    Dio _dio = getApiClient();
+
+    var response = await _dio.post(REQUEST_PHONE_NUMBER_FORGET_PASSWORD, data: {
+      'contact_number':phoneNumber.toString(),
+
+    } );
+
+   return response.data;
+
+  }
+
+  Future<dynamic> changePasswordFromPhoneRequest({required String otp, required String id, required String newPass, required String confirmPass}) async {
+    //REQUEST_PHONE_NUMBER_FORGET_PASSWORD
+    Dio _dio = getApiClient();
+
+    print(id);
+
+    var response = await _dio.post(Change_PASSWORD_FROM_FORGET_REQUEST, data: {
+      'newPassword': newPass,
+      'confirmPassword': confirmPass,
+      'otp': otp.toString(),
+      'id': id,
+    } );
+
+    return response.data;
+
+  }
+
+
+
   //For login
   Future<LoginResponseModel> login(LoginRequestModel loginRequestModel) async {
     Dio _dio = getApiClient();

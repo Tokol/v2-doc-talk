@@ -18,6 +18,13 @@ const String CHANGE_USER_PROFILE_DETAIL = BASE_URL+'api/users/user/change/profil
 const String USER_LOG_OUT = BASE_URL+'auth/logout';
 const String GET_USER_DETAIL = BASE_URL+'api/users/user/';
 
+//forget PAssword
+
+const String REQUEST_PHONE_NUMBER_FORGET_PASSWORD = BASE_URL+'auth/forgot-password/generate/otp';
+
+const String Change_PASSWORD_FROM_FORGET_REQUEST = BASE_URL+'auth/forgot-password/change-password';
+
+
 //change Password;
 const String CHANGE_USER_PASSWORD = BASE_URL+'api/users/user/change-password';
 

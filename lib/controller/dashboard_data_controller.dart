@@ -16,8 +16,6 @@ class DashboardDataController extends GetxController {
 
 
   void updateDashboardData(DashboardDataModel updatedDashboardDataModel){
-    print(updatedDashboardDataModel.id);
-    print(updatedDashboardDataModel.fullName);
       dashboardDataModal.update((newDashboardValue) {
         dashboardDataModal.value = updatedDashboardDataModel;
       });
