@@ -1,20 +1,27 @@
 import 'package:doc_talk/helper/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class MessageTile extends StatefulWidget {
   final String groupName;
+  final String groupId;
   final String lastMessageText;
   String? imageUrl;
-  final String time;
+  final int time;
   final String messageBy;
+  final String messageType;
+  final VoidCallback onPress;
 
   MessageTile(
       {Key? key,
+        required this.onPress,
       required this.groupName,
+        required this.groupId,
       required this.lastMessageText,
       this.imageUrl,
       required this.time,
         required this.messageBy,
+        required this.messageType,
       });
 
   @override
@@ -24,10 +31,18 @@ class MessageTile extends StatefulWidget {
 
 
 class _MessageTileState extends State<MessageTile> {
+
   @override
   Widget build(BuildContext context) {
+    var dt = DateTime.fromMillisecondsSinceEpoch(widget.time);
+
+    String time = DateFormat.jms().format(dt);
+    String monthDay = DateFormat.MMMMd().format(dt);
+    String year = DateFormat.y().format(dt);
+
+
     return GestureDetector(
-      onTap: () {},
+      onTap: widget.onPress,
       child: Container(
         padding:
             const EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
@@ -68,7 +83,7 @@ class _MessageTileState extends State<MessageTile> {
                             Expanded(
 
                               child: Text(
-                                Utils.dottedShortMessage(value: widget.lastMessageText+" la lal la land is very sad movie at the end ...", limit: 15),
+                                Utils.dottedShortMessage(value: widget.lastMessageText, limit: 20),
                                 style: TextStyle(
                                     fontSize: 13,
                                     color: Colors.grey.shade600,
@@ -86,9 +101,9 @@ class _MessageTileState extends State<MessageTile> {
               ),
             ),
             Text(
-              widget.time,
+              '${time}\n${monthDay}\n${year}',
               style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 11,
                   fontWeight: FontWeight.normal),
             ),
           ],

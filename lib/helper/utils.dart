@@ -11,12 +11,17 @@ class Utils {
 
 
   static String getShortCutOfString({required String longValue}){
-    String shortCutName = "";
-    List<String> groupSplittingArray = longValue.split(" ");
-    for ( int i = 0; i<groupSplittingArray.length; i++){
+   if(longValue==""||longValue==" "){
+     return longValue;
+   }
 
+   String shortCutName = "";
+   List<String> groupSplittingArray = longValue.split(" ");
+   for ( int i = 0; i<groupSplittingArray.length; i++){
+
+    try{
       if( _isNumeric(groupSplittingArray[i])){
-        shortCutName = shortCutName+" "+groupSplittingArray[i];
+        shortCutName = shortCutName+""+groupSplittingArray[i]+"";
       }
 
       else {
@@ -25,16 +30,20 @@ class Utils {
 
     }
 
-    return (shortCutName).toUpperCase();
+    catch(e){
+      return (shortCutName).toUpperCase();
+    }
+
+   }
+
+   return (shortCutName).toUpperCase();
 
   }
 
   static String getFirstWord({required String fullSentence}){
     String firstWord = "";
     List<String> groupSplittingArray = fullSentence.split(" ");
-
     firstWord = groupSplittingArray[0] +": ";
-
     return firstWord;
   }
 
@@ -79,6 +88,11 @@ class Utils {
    return true;
     }
   }
+
+
+
+
+
 
 
 }

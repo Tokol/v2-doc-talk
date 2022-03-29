@@ -12,6 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../helper/jsonfilters.dart';
+import '../models/chat_group_message.dart';
+import '../models/chat_group_modal.dart';
 import '../models/dasboard_data_model.dart';
 import '../models/resend_otp.dart';
 import '../ui/dasboard/dashbaordPages/profile/profile.dart';
@@ -74,38 +77,36 @@ class ApiClient {
     }
   }
 
-
-  Future<dynamic> requestPhonenumberForForgetPassword(String phoneNumber) async {
-        //REQUEST_PHONE_NUMBER_FORGET_PASSWORD
-    Dio _dio = getApiClient();
-
-    var response = await _dio.post(REQUEST_PHONE_NUMBER_FORGET_PASSWORD, data: {
-      'contact_number':phoneNumber.toString(),
-
-    } );
-
-   return response.data;
-
-  }
-
-  Future<dynamic> changePasswordFromPhoneRequest({required String otp, required String id, required String newPass, required String confirmPass}) async {
+  Future<dynamic> requestPhonenumberForForgetPassword(
+      String phoneNumber) async {
     //REQUEST_PHONE_NUMBER_FORGET_PASSWORD
     Dio _dio = getApiClient();
 
-    print(id);
+    var response = await _dio.post(REQUEST_PHONE_NUMBER_FORGET_PASSWORD, data: {
+      'contact_number': phoneNumber.toString(),
+    });
+
+    return response.data;
+  }
+
+  Future<dynamic> changePasswordFromPhoneRequest(
+      {required String otp,
+      required String id,
+      required String newPass,
+      required String confirmPass}) async {
+    //REQUEST_PHONE_NUMBER_FORGET_PASSWORD
+    Dio _dio = getApiClient();
+
 
     var response = await _dio.post(Change_PASSWORD_FROM_FORGET_REQUEST, data: {
       'newPassword': newPass,
       'confirmPassword': confirmPass,
       'otp': otp.toString(),
       'id': id,
-    } );
+    });
 
     return response.data;
-
   }
-
-
 
   //For login
   Future<LoginResponseModel> login(LoginRequestModel loginRequestModel) async {
@@ -118,8 +119,6 @@ class ApiClient {
 
       loginResponseModel = LoginResponseModel.fromJson(response.data);
 
-      print(response.data);
-      print(response.data['email']);
 
       await PrefUtils.putString(ACCESS_TOKEN, loginResponseModel.token ?? '');
       //
@@ -164,6 +163,8 @@ class ApiClient {
       _dio.options.headers["x-access-token"] = accessToken;
 
       var response = await _dio.get(GET_USER_DETAIL + userID!);
+
+      print(response);
 
       if (response.data["data"] != null) {
         dashboardDataModel = DashboardDataModel(
@@ -236,26 +237,20 @@ class ApiClient {
     return json.decode(response.data);
   }
 
-
-  Future<void> searchUserFromPhoneContacts({required String accessToken,required List<String> contacts }) async {
+  Future<dynamic> searchUserFromPhoneContacts(
+      {required String accessToken, required List<String> contacts}) async {
     Dio _dio = getApiClient();
     _dio.options.headers["x-access-token"] = accessToken;
 
-    var response = await _dio.post(GET_USER_LIST_FROM_CONTACTS, data: {
-      'numbers': contacts,
-    },
+    var response = await _dio.post(
+      GET_USER_LIST_FROM_CONTACTS,
+      data: {
+        'numbers': contacts,
+      },
+    );
 
-    options: Options(
-      method: 'POST',
-      responseType: ResponseType.plain,
-    ),);
-
-    print(response);
-
-    return json.decode(response.data);
+    return response.data;
   }
-
-
 
   Future<void> changePassword(
       {required Map<String, dynamic> map, required String accessToken}) async {
@@ -275,9 +270,182 @@ class ApiClient {
         await logout(accessToken: accessToken);
       }
     } catch (e) {
-      print(e.toString());
+      //print(e.toString());
     }
   }
+
+  Future<List<ChatGroupModel>> getUserChatGroups(
+      {required String accessToken, required String phoneNumber}) async {
+    List<ChatGroupModel> chatGroupModel = [];
+    Dio _dio = getApiClient();
+    _dio.options.headers["x-access-token"] = accessToken;
+
+    try {
+      var response = await _dio.get(GET_USER_CHAT_GROUPS + phoneNumber,
+          options: Options(
+              method: 'GET',
+              responseType: ResponseType.plain // or ResponseType.JSON
+              ));
+
+      var result = json.decode(response.data);
+      print(result["data"]);
+      var data = result["data"];
+
+      chatGroupModel = JsonFilters().getChatGroups(data);
+
+      await PrefUtils.putString(USER_CHAT_GROUP, jsonEncode(data));
+      return chatGroupModel;
+    } catch (e) {
+      print(e);
+      print('worng');
+      return chatGroupModel;
+      //print(e.toString());
+    }
+  }
+
+  Future<dynamic> createChatGroup(
+      {required String groupName,
+      required String accessToken,
+      required String contactNumber}) async {
+    var _dio = new Dio();
+    _dio.options.baseUrl = CREATE_GROUP_CHAT;
+    _dio.options.connectTimeout = 500000; //5s
+    _dio.options.receiveTimeout = 500000;
+    _dio.options.headers["x-access-token"] = accessToken;
+
+    Map<String, dynamic> requestParams = {
+      "group_name": groupName,
+      "admin": contactNumber,
+    };
+
+    FormData formData = new FormData.fromMap(requestParams);
+    var response = await _dio.post(CREATE_GROUP_CHAT,
+        data: formData,
+        options: Options(
+            method: 'POST',
+            responseType: ResponseType.json // or ResponseType.JSON
+            ));
+
+    return response.data;
+  }
+
+  Future<dynamic> addUserInGroup(
+      {required String groupId,
+      required String accessToken,
+      required String contactNumber}) async {
+    var _dio = new Dio();
+    _dio.options.baseUrl = CREATE_GROUP_CHAT;
+    _dio.options.connectTimeout = 500000; //5s
+    _dio.options.receiveTimeout = 500000;
+    _dio.options.headers["x-access-token"] = accessToken;
+
+    Map map = {"group_id": groupId, "user": contactNumber};
+    var response = await _dio.put(CREATE_GROUP_CHAT,
+        data: map,
+        options: Options(
+            method: 'PUT',
+            responseType: ResponseType.json // or ResponseType.JSON
+            ));
+
+    return response.data;
+  }
+
+
+  Future<List<ChatGroupMessage>> getMessagesOfGroup({required String accessToken, required String groupId, required int pageNumber}) async {
+    List<ChatGroupMessage> chatMessageFromGroups = [];
+
+    Dio _dio = getApiClient();
+    _dio.options.baseUrl = GET_MESSAGE_FROM_GROUP;
+    _dio.options.connectTimeout = 500000; //5s
+    _dio.options.receiveTimeout = 500000;
+    _dio.options.headers["x-access-token"] = accessToken;
+    Map map = {'group_id': groupId};
+    String requestMessageUrl = '$GET_MESSAGE_FROM_GROUP$pageNumber&limit=10';
+    var response = await _dio.post(requestMessageUrl,
+        data: map,
+        options: Options(
+            method: 'POST',
+            responseType: ResponseType.json // or ResponseType.JSON
+        ));
+
+          var data = response.data["data"]["resultMessages"];
+
+          print(data);
+
+          try{
+            chatMessageFromGroups = JsonFilters().getChatMessageFromGroups(data);
+          }
+          catch(e){
+            print(e);
+          }
+
+
+
+          return chatMessageFromGroups;
+
+  }
+
+
+
+  Future<dynamic> getTotalGroupMembersFromGroup({required String accessToken, required String groupId}) async {
+    Dio _dio = getApiClient();
+    _dio.options.baseUrl = GET_TOTAL_GROUP_USER;
+    _dio.options.connectTimeout = 500000; //5s
+    _dio.options.receiveTimeout = 500000;
+
+    _dio.options.headers["x-access-token"] = accessToken;
+
+    print(GET_TOTAL_GROUP_USER);
+    print(accessToken);
+    print(groupId);
+
+    var map = {
+      'group_id': groupId,
+    };
+
+    var response = await _dio.post(GET_TOTAL_GROUP_USER,
+        data: map,
+        options: Options(
+            method: 'POST',
+            responseType: ResponseType.json // or ResponseType.JSON
+        ));
+
+  }
+
+
+
+  Future<String> getImagePathForChat({required String accessToken, required XFile image}) async{
+
+    try {
+
+      var _dio = new Dio();
+      _dio.options.baseUrl = GET_IMAGE_PATH_FOR_CHAT_MESSAGE;
+      _dio.options.connectTimeout = 500000; //5s
+      _dio.options.receiveTimeout = 500000;
+      _dio.options.headers["x-access-token"] = accessToken;
+
+      FormData formData = new FormData.fromMap({
+        "img": await MultipartFile.fromFile(image.path,
+            filename: image.path.toString()),
+      });
+
+      var response = await _dio.post(GET_IMAGE_PATH_FOR_CHAT_MESSAGE,
+          data: formData,
+          options: Options(
+              method: 'POST',
+              responseType: ResponseType.plain // or ResponseType.JSON
+          ));
+
+      var result = json.decode(response.data);
+
+      return result["imgUrl"];
+    } catch (e) {
+      print('wrong ');
+      return "";
+    }
+  }
+
+
 
   Future<void> logout({String? accessToken}) async {
     Dio _dio = getApiClient();
@@ -291,6 +459,7 @@ class ApiClient {
     await PrefUtils.putString(USER_ID, '');
     await PrefUtils.putString(USER_DETAIL, '');
     await PrefUtils.putString(DASHBOARD_VALUE, '');
+    await PrefUtils.putString(USER_CHAT_GROUP, '');
     await UserProfile().logout();
   }
 }

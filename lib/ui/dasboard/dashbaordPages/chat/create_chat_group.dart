@@ -1,11 +1,13 @@
 import 'package:doc_talk/networks/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:flutter_hud/flutter_hud.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
 import '../../../../controller/dashboard_data_controller.dart';
 import '../../../../models/otp_verification.dart';
+import 'group/group_screen.dart';
 
 class CreateChatGroup extends StatefulWidget {
   @override
@@ -13,49 +15,73 @@ class CreateChatGroup extends StatefulWidget {
 }
 
 class _CreateChatGroupState extends State<CreateChatGroup> {
+
   final DashboardDataController _controller =
       Get.put(DashboardDataController());
 
+
   @override
   void initState() {
-    getUserFromContacts();
+     getUserFromContacts();
 
     super.initState();
   }
 
+  bool loading = false;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            backPressed();
-          },
-        ),
-      ),
-      body: WillPopScope(
-        onWillPop: backPressed,
-        child: Container(
-          color: Colors.red,
+      return WidgetHUD(
+        showHUD: loading,
+        builder: (context) => Scaffold(
+        body: WillPopScope(
+          onWillPop: backPressed,
+        child: GroupScreen(),
         ),
       ),
     );
   }
 
-  Future<List<User>> getUserFromContacts() async {
-    List<User> listUsers = [];
+  Future<List<ContactUserInApp>> getUserFromContacts() async {
+
+    List<ContactUserInApp> contactUserInAp= [];
 
     List<String> contactsNumbers = await getContactDetail();
 
-    await ApiClient().searchUserFromPhoneContacts(accessToken: _controller.dashboardDataModal.value.accessToken!, contacts:contactsNumbers);
+   var response =  await ApiClient().searchUserFromPhoneContacts(accessToken: _controller.dashboardDataModal.value.accessToken!, contacts:contactsNumbers);
 
-    return listUsers;
+   var contactData = response["data"];
+
+   print(contactData);
+
+   for(int i=0; i<contactData.length; i++){
+
+     contactUserInAp.add(ContactUserInApp(
+       contactNumber:  contactData[i]["contact_number"].toString(),
+       userId: contactData[i]["_id"].toString(),
+       fullName: contactData[i]["name"].toString(),
+       img: contactData[i]["img"].toString(),
+       email:contactData[i]["email"].toString(),
+
+       speciality: contactData[i]["speciality"].toString(),
+       selected: false,
+     ));
+
+   }
+   _controller.updateChatGroupContacts(contactUserInAp);
+   setState(() {
+     loading = false;
+   });
+    return contactUserInAp;
   }
 
   Future<List<String>> getContactDetail() async {
     List<String> sanitizeNumber = [];
     if (await FlutterContacts.requestPermission()) {
+      setState(() {
+        loading = true;
+      });
+
+
       List<Contact> contacts = await FlutterContacts.getContacts();
       contacts = await FlutterContacts.getContacts(
           withProperties: true, withPhoto: false);
@@ -118,4 +144,16 @@ class _CreateChatGroupState extends State<CreateChatGroup> {
     Get.back();
     return true;
   }
+}
+
+class ContactUserInApp{
+  String userId="";
+  String fullName="";
+  String img="";
+  String speciality="";
+  String email = "";
+  bool selected = false;
+  String contactNumber = "";
+  ContactUserInApp({ required this.contactNumber, required this.email, required this.userId, required this.fullName,required this.speciality,required this.img,this.selected=false,});
+
 }

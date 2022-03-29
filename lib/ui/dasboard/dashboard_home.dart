@@ -1,6 +1,8 @@
 import 'dart:convert';
 
-import 'package:doc_talk/ui/dasboard/dashbaordPages/chat/chat_group.dart';
+import 'package:doc_talk/helper/jsonfilters.dart';
+import 'package:doc_talk/ui/dasboard/dashbaordPages/chat/chat_screens/chat_home.dart';
+import 'package:doc_talk/ui/dasboard/dashbaordPages/chat/create_chat_group.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -9,12 +11,13 @@ import 'package:provider/provider.dart';
 import '../../controller/dashboard_data_controller.dart';
 import '../../data/dashboard_data.dart';
 import '../../helper/utils.dart';
+import '../../models/chat_group_modal.dart';
 import '../../models/dasboard_data_model.dart';
 import '../../models/otp_verification.dart';
 import '../../networks/api_client.dart';
 import '../../shared_pref/shared_pref.dart';
 import '../../shared_pref/shared_pref_const.dart';
-import 'dashbaordPages/chat/chat_screen.dart';
+
 import 'dashbaordPages/dash.dart';
 import 'dashbaordPages/dash_list_views/recent_chat_list.dart';
 import 'dashbaordPages/profile/profile.dart';
@@ -30,12 +33,14 @@ class _DashboardHomeScreenState extends State<DashboardHomeScreen> {
   @override
   void initState() {
      loadDashBoardData();
-    super.initState();
+     super.initState();
   }
 
+
+  final DashboardDataController _controller = Get.put(DashboardDataController());
   @override
   Widget build(BuildContext context) {
-    final DashboardDataController _controller = Get.put(DashboardDataController());
+
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       body: Stack(children: [
@@ -64,7 +69,18 @@ class _DashboardHomeScreenState extends State<DashboardHomeScreen> {
                 topRight: Radius.circular(30),
               ),
             ),
-           // child:RecentChatList(recentMessageList: recentMessageList,),
+            child:
+            Obx(()=>
+            RecentChatList(recentMessageList: _controller.userChatGroups.value,
+            onPress: (index){
+
+              Get.to(ChatHomeScreen(chatGroupModel: _controller.userChatGroups.value[index],))?.then((value) async {
+                await loadDashBoardData();
+              });
+
+
+            },
+            )),
           ),
           top: MediaQuery.of(context).size.height * 0.15,
           left: 0,
@@ -149,10 +165,26 @@ class _DashboardHomeScreenState extends State<DashboardHomeScreen> {
 
   }
 
+
+
+  Future<void> loadChatData()async {
+    //getUserChatGroups
+
+
+  }
+
+
   }
 Future<DashboardDataModel> loadDashBoardData() async {
 
  var dashboardValue = await PrefUtils.getString(DASHBOARD_VALUE,'' );
+
+ var chatGroupValue = await PrefUtils.getString(USER_CHAT_GROUP, '');
+ if(chatGroupValue!=''){
+   List<ChatGroupModel> chatGroupModels = JsonFilters().getChatGroups(jsonDecode(chatGroupValue));
+   Get.find<DashboardDataController>().updateUserChatGroupList(chatGroupModels);
+
+ }
 
  DashboardDataModel dashboardDataModel;
  if(dashboardValue==''){
@@ -166,7 +198,7 @@ Future<DashboardDataModel> loadDashBoardData() async {
    print('priniting dashbmodal from pref');
 
 
-
+      (dashboardDataModel.fullName);
    print(dashboardDataModel.id);
    Get.find<DashboardDataController>().updateDashboardData(dashboardDataModel);
 
@@ -175,11 +207,14 @@ Future<DashboardDataModel> loadDashBoardData() async {
 
   bool internet = await Utils.checkInternet();
   if(internet){
-
+    print('internet');
     dashboardDataModel = await ApiClient().getUserDetail(userID: dashboardDataModel.id, accessToken: dashboardDataModel.accessToken);
     Get.find<DashboardDataController>().updateDashboardData(dashboardDataModel);
 
   }
+
+   List<ChatGroupModel> chatGroupModel =   await ApiClient().getUserChatGroups(accessToken: dashboardDataModel.accessToken!, phoneNumber: dashboardDataModel.contactNumber!);
+ Get.find<DashboardDataController>().updateUserChatGroupList(chatGroupModel);
 
 
 
@@ -218,6 +253,9 @@ Future<DashboardDataModel> fetchDataFromSharedPref() async {
 
       }
 
+
       return dashboardDataModel;
 
     }
+
+
