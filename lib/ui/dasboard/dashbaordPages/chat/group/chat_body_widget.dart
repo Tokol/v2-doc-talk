@@ -110,7 +110,7 @@ class _ChatBodyWidget extends State<ChatBodyWidget> {
                                       NetworkImage(contactUserInApp.img)),
                           title: Text(contactUserInApp.fullName),
                           subtitle: Text(contactUserInApp.speciality),
-                          trailing: Checkbox(
+                          trailing: contactUserInApp.alreadyInGroup?Text('Already in group'):Checkbox(
                             checkColor: Colors.white,
                             activeColor: const Color(0xFF5A227E),
                             value: contactUserInApp.selected,
@@ -119,12 +119,12 @@ class _ChatBodyWidget extends State<ChatBodyWidget> {
                               setState(() {
                                 if (filter) {
                                   for (int i = 0;
-                                      i <
-                                          _controller
-                                              .chatGroupContact.value.length;
-                                      i++) {
+                                  i <
+                                      _controller
+                                          .chatGroupContact.value.length;
+                                  i++) {
                                     if (_controller
-                                            .chatGroupContact.value[i].userId ==
+                                        .chatGroupContact.value[i].userId ==
                                         contactUserInApp.userId) {
                                       _controller
                                           .updateSelectedUserFromContact(i);

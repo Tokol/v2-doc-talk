@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:dio/dio.dart';
+import 'package:doc_talk/helper/utils.dart';
 import 'package:doc_talk/models/login_model.dart';
 import 'package:doc_talk/models/otp_verification.dart';
 import 'package:doc_talk/models/register.dart';
@@ -12,10 +13,12 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../controller/dashboard_data_controller.dart';
 import '../helper/jsonfilters.dart';
 import '../models/chat_group_message.dart';
 import '../models/chat_group_modal.dart';
 import '../models/dasboard_data_model.dart';
+import '../models/patient_model.dart';
 import '../models/resend_otp.dart';
 import '../ui/dasboard/dashbaordPages/profile/profile.dart';
 
@@ -39,14 +42,14 @@ class ApiClient {
   Future<RegisterResponseModel> register(
       RegisterRequestModel registerRequestModel) async {
     Dio _dio = getApiClient();
-    print(registerRequestModel.toJson());
+
     var response =
         await _dio.post(REGISTER_URL, data: registerRequestModel.toJson());
 
     final RegisterResponseModel registerResponseModel =
         RegisterResponseModel.fromJson(response.data);
 
-    print(registerRequestModel);
+
     return registerResponseModel;
   }
 
@@ -58,7 +61,7 @@ class ApiClient {
     var response = await _dio.post(VERIFY_OTP_URL + userId,
         data: otpRequestModel.toJson());
 
-    print(response);
+
     OtpResponseModel userDetails;
     try {
       userDetails = OtpResponseModel.fromJson(response.data);
@@ -164,7 +167,7 @@ class ApiClient {
 
       var response = await _dio.get(GET_USER_DETAIL + userID!);
 
-      print(response);
+
 
       if (response.data["data"] != null) {
         dashboardDataModel = DashboardDataModel(
@@ -288,7 +291,7 @@ class ApiClient {
               ));
 
       var result = json.decode(response.data);
-      print(result["data"]);
+
       var data = result["data"];
 
       chatGroupModel = JsonFilters().getChatGroups(data);
@@ -370,7 +373,6 @@ class ApiClient {
 
           var data = response.data["data"]["resultMessages"];
 
-          print(data);
 
           try{
             chatMessageFromGroups = JsonFilters().getChatMessageFromGroups(data);
@@ -387,7 +389,9 @@ class ApiClient {
 
 
 
-  Future<dynamic> getTotalGroupMembersFromGroup({required String accessToken, required String groupId}) async {
+  Future<List<ChatGroupUserTotal>> getTotalGroupMembersFromGroup({required String accessToken, required String groupId}) async {
+    List<ChatGroupUserTotal> totalUserInGroup = [];
+
     Dio _dio = getApiClient();
     _dio.options.baseUrl = GET_TOTAL_GROUP_USER;
     _dio.options.connectTimeout = 500000; //5s
@@ -395,9 +399,6 @@ class ApiClient {
 
     _dio.options.headers["x-access-token"] = accessToken;
 
-    print(GET_TOTAL_GROUP_USER);
-    print(accessToken);
-    print(groupId);
 
     var map = {
       'group_id': groupId,
@@ -409,7 +410,19 @@ class ApiClient {
             method: 'POST',
             responseType: ResponseType.json // or ResponseType.JSON
         ));
+    var result = response.data["data"];
+    for(int i=0; i<result.length; i++){
+      String id = result[i]["_id"];
+      String name = result[i]["name"];
+      String email = result[i]["email"];
+      String profileImage = result[i]["img"].toString();
+      String contactNumber = result[i]["contact_number"];
+      String speciality = result[i]["speciality"];
 
+      totalUserInGroup.add(ChatGroupUserTotal(name: name, profileImage: profileImage, email: email, contactNumber: contactNumber, id: id, speciality: speciality));
+
+    }
+    return totalUserInGroup;
   }
 
 
@@ -444,6 +457,67 @@ class ApiClient {
       return "";
     }
   }
+
+
+
+  Future<void> leaveGroup({String? accessToken, String? groupId, String? contactNumber}) async {
+
+    Dio _dio = getApiClient();
+    _dio.options.baseUrl = USER_LEAVE_GROUP;
+    _dio.options.connectTimeout = 500000; //5s
+    _dio.options.receiveTimeout = 500000;
+
+    _dio.options.headers["x-access-token"] = accessToken;
+
+    Map map = {"email": contactNumber, "group_id": groupId};
+
+    var response = await _dio.post(USER_LEAVE_GROUP,
+        data: map,
+        options: Options(
+            method: 'POST',
+            responseType: ResponseType.json // or ResponseType.JSON
+        ));
+
+    print(response.data);
+  }
+
+
+
+  Future<List<Patient>> getPatientFromGroup({String? accessToken, String? groupId}) async {
+    List<Patient> patientList=[];
+  Dio _dio = getApiClient();
+  _dio.options.baseUrl = GET_All_PATIENT_LIST_Of_GROUP;
+  _dio.options.connectTimeout = 500000; //5s
+  _dio.options.receiveTimeout = 500000;
+
+  _dio.options.headers["x-access-token"] = accessToken;
+
+
+  var response = await _dio.get('${GET_All_PATIENT_LIST_Of_GROUP}$groupId',
+      options: Options(
+          method: 'GET',
+          responseType: ResponseType.json // or ResponseType.JSON
+      ));
+
+
+  dynamic result = response.data;
+
+  if (result.containsKey('data')) {
+    var data = result['data'];
+    patientList = JsonFilters().getPatientListFromGroup(data);
+
+  }
+
+return  patientList;
+
+}
+
+
+
+
+
+
+
 
 
 

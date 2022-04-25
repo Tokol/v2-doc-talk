@@ -10,6 +10,9 @@ import '../../../../models/otp_verification.dart';
 import 'group/group_screen.dart';
 
 class CreateChatGroup extends StatefulWidget {
+  bool fromChatSetting;
+  CreateChatGroup({this.fromChatSetting=false});
+
   @override
   State<CreateChatGroup> createState() => _CreateChatGroupState();
 }
@@ -35,7 +38,7 @@ class _CreateChatGroupState extends State<CreateChatGroup> {
         builder: (context) => Scaffold(
         body: WillPopScope(
           onWillPop: backPressed,
-        child: GroupScreen(),
+        child: GroupScreen(fromChatSetting: widget.fromChatSetting,),
         ),
       ),
     );
@@ -51,22 +54,52 @@ class _CreateChatGroupState extends State<CreateChatGroup> {
 
    var contactData = response["data"];
 
-   print(contactData);
 
-   for(int i=0; i<contactData.length; i++){
+   if(widget.fromChatSetting){
+     for(int i=0; i<contactData.length; i++){
+       bool alreadyInGroup=false;
+      for (int j=0; j<_controller.totalUserInGroups.length;j++){
 
-     contactUserInAp.add(ContactUserInApp(
-       contactNumber:  contactData[i]["contact_number"].toString(),
-       userId: contactData[i]["_id"].toString(),
-       fullName: contactData[i]["name"].toString(),
-       img: contactData[i]["img"].toString(),
-       email:contactData[i]["email"].toString(),
+       if( _controller.totalUserInGroups[j].contactNumber.toString() == contactData[i]["contact_number"].toString()){
+        alreadyInGroup = true;
+       }
+      }
 
-       speciality: contactData[i]["speciality"].toString(),
-       selected: false,
-     ));
+
+       contactUserInAp.add(ContactUserInApp(
+         contactNumber:  contactData[i]["contact_number"].toString(),
+         userId: contactData[i]["_id"].toString(),
+         fullName: contactData[i]["name"].toString(),
+         img: contactData[i]["img"].toString(),
+         email:contactData[i]["email"].toString(),
+
+         speciality: contactData[i]["speciality"].toString(),
+         selected: false,
+         alreadyInGroup: alreadyInGroup,
+       ));
+
+
+     }
+   }
+
+   else {
+     for(int i=0; i<contactData.length; i++){
+       contactUserInAp.add(ContactUserInApp(
+         contactNumber:  contactData[i]["contact_number"].toString(),
+         userId: contactData[i]["_id"].toString(),
+         fullName: contactData[i]["name"].toString(),
+         img: contactData[i]["img"].toString(),
+         email:contactData[i]["email"].toString(),
+
+         speciality: contactData[i]["speciality"].toString(),
+         selected: false,
+       ));
+
+     }
+
 
    }
+
    _controller.updateChatGroupContacts(contactUserInAp);
    setState(() {
      loading = false;
@@ -154,6 +187,7 @@ class ContactUserInApp{
   String email = "";
   bool selected = false;
   String contactNumber = "";
-  ContactUserInApp({ required this.contactNumber, required this.email, required this.userId, required this.fullName,required this.speciality,required this.img,this.selected=false,});
+  bool alreadyInGroup;
+  ContactUserInApp({ required this.contactNumber, required this.email, required this.userId, required this.fullName,required this.speciality,required this.img,this.selected=false, this.alreadyInGroup = false});
 
 }

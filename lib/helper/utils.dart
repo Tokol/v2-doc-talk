@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Utils {
   static final riKey1 = const Key('__RIKEY1__');
@@ -89,10 +90,20 @@ class Utils {
     }
   }
 
+  String getTime(int timeStamp) {
+    var dt = DateTime.fromMillisecondsSinceEpoch(timeStamp);
+
+    String time = DateFormat.jms().format(dt);
+    String monthDay = DateFormat.MMMMd().format(dt);
+    String year = DateFormat.y().format(dt);
+
+    return '$time, $monthDay, $year';
+  }
 
 
+}
 
-
-
-
+extension StringCasingExtension on String {
+  String toCapitalized() => length > 0 ?'${this[0].toUpperCase()}${substring(1).toLowerCase()}':'';
+  String toTitleCase() => replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str.toCapitalized()).join(' ');
 }

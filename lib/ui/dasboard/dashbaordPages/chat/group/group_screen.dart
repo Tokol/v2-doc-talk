@@ -11,6 +11,9 @@ import 'chat_body_widget.dart';
 
 class GroupScreen extends StatelessWidget {
 
+  bool fromChatSetting;
+  GroupScreen({this.fromChatSetting=false});
+
   final DashboardDataController _controller =
   Get.put(DashboardDataController());
   @override
@@ -33,13 +36,13 @@ class GroupScreen extends StatelessWidget {
         ),
         centerTitle: true,
         title: Text(
-          "New Group",
+          fromChatSetting?"Add To Group":"New Group",
           style: TextStyle(fontSize: 22.0),
         ),
         actions: [
 
      IconButton(icon: Icon(FontAwesomeIcons.check), onPressed: () {
-       moveToNextScreen();
+      fromChatSetting==false? moveToNextScreen(): Get.back();
     })
         ],
       ),

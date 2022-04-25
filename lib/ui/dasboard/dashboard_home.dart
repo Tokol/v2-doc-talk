@@ -195,11 +195,7 @@ Future<DashboardDataModel> loadDashBoardData() async {
  else {
    dashboardDataModel = DashboardDataModel().fromJson(jsonDecode(dashboardValue));
 
-   print('priniting dashbmodal from pref');
 
-
-      (dashboardDataModel.fullName);
-   print(dashboardDataModel.id);
    Get.find<DashboardDataController>().updateDashboardData(dashboardDataModel);
 
 
@@ -207,7 +203,7 @@ Future<DashboardDataModel> loadDashBoardData() async {
 
   bool internet = await Utils.checkInternet();
   if(internet){
-    print('internet');
+
     dashboardDataModel = await ApiClient().getUserDetail(userID: dashboardDataModel.id, accessToken: dashboardDataModel.accessToken);
     Get.find<DashboardDataController>().updateDashboardData(dashboardDataModel);
 

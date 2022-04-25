@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class ActionButton extends StatelessWidget {
   const ActionButton(
-      {Key? key, required this.buttonText, required this.onPressed})
+      {Key? key, required this.buttonText, required this.onPressed, required int width})
+
       : super(key: key);
   final String buttonText;
   final Function onPressed;

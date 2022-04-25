@@ -1,5 +1,8 @@
+import 'package:doc_talk/helper/utils.dart';
+
 import '../models/chat_group_message.dart';
 import '../models/chat_group_modal.dart';
+import '../models/patient_model.dart';
 
 class JsonFilters {
 
@@ -96,6 +99,67 @@ class JsonFilters {
 
     return chatGroupModel;
   }
+
+
+  List<Patient> getPatientListFromGroup(dynamic data){
+
+
+
+    List<Patient> patientList=[];
+
+    for (int i = 0; i < data.length; i++) {
+      var result = data[i];
+
+      print(result);
+
+      String lastUpdateTime = "";
+      String lastUpdateBy = "";
+
+      if (result.containsKey('last_updated_time')) {
+        lastUpdateTime =
+            Utils().getTime(int.parse(result["last_updated_time"]));
+      } else {
+        DateTime tempDate =
+        DateTime.parse(result['updatedAt']);
+        int epochTime = tempDate.toUtc().millisecondsSinceEpoch;
+        lastUpdateTime = Utils().getTime(epochTime);
+      }
+
+      if (result.containsKey("last_updated_by")) {
+        lastUpdateBy = result["last_updated_by"];
+      } else {
+        lastUpdateBy = result["created_by"];
+      }
+
+      /*
+      *  bedNumber: result["bedNo"],
+            wardName: result["wardName"],
+            patientId: result["_id"],
+            patientDetails: result["patient_details"],
+      * */
+
+      Patient _patient= Patient();
+
+      _patient.id = result["_id"];
+      _patient.firstName = result['patient_details']["firstName"];
+      _patient.middleName = result['patient_details']["middleName"];
+      _patient.lastName = result['patient_details']["lastName"];
+      _patient.bedNo = result["bedNo"];
+      _patient.wardNo = result["wardName"];
+
+
+      _patient.lastUpdateAt = lastUpdateTime;
+      _patient.lastUpdateBy = lastUpdateBy;
+
+
+      patientList.add(_patient);
+
+    }
+
+
+    return patientList;
+  }
+
 
 
 

@@ -45,3 +45,33 @@ const String GET_TOTAL_GROUP_USER = BASE_URL + 'api/chatgroup/group/members';
 const String GET_MESSAGE_FROM_GROUP = BASE_URL+'api/chatgroup/group/messages?page=';
 
 const String GET_IMAGE_PATH_FOR_CHAT_MESSAGE = BASE_URL+'api/chatgroup/image/upload';
+
+const String USER_LEAVE_GROUP = BASE_URL + 'api/chatgroup/member/leave';
+
+
+
+
+const String GET_All_PATIENT_LIST_Of_GROUP = BASE_URL + 'api/patients/patients/';
+
+const String GET_ARCHIVED_PATIENT_LIST = BASE_URL + 'api/patients/archived/';
+
+
+const String CREATE_PATIENT = BASE_URL + 'api/patients/create';
+
+const String UPDATE_SPECIFIC_EXAMINATION_INFO =
+    BASE_URL + 'api/patients/patient/update/specific/examination/';
+
+const String UPDATE_PATIENT_VITALS =
+    BASE_URL + 'api/patients/patient/update/vital/';
+
+
+const String ADD_PATIENT_OTHER_INVESTIGATION =
+    BASE_URL + 'api/patients/patient/update/investigation/';
+
+const String UPDATE_PATIENT_BASIC_INFO =
+    BASE_URL + 'api/patients/patient/update/basic/';
+
+const String GET_PATIENT_DETAIL_BY_ID = BASE_URL + 'api/patients/patient/';
+
+
+const String UPDATE_SYNOPSIS_PATIENT=BASE_URL+"api/patients/patient/update/synopsis/";
